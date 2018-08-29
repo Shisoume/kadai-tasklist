@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 
 use App\Task;
+use Illuminate\Support\Facades\Auth;
 
 class TasksController extends Controller
 {
@@ -15,12 +16,17 @@ class TasksController extends Controller
      */
     public function index()
     {
-        //
-        $tasks = Task::all();
+        //ログインしている場合のみタスク一覧を表示
+        if (Auth::check()) {
+          $tasks = Task::all();
 
-        return view('tasks.index', [
-          'tasks' => $tasks,
-        ]);
+          return view('tasks.index', [
+            'tasks' => $tasks,
+          ]);
+        }
+        else {
+          return view('welcome');
+        }
     }
 
     /**
