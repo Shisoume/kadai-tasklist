@@ -16,14 +16,22 @@ class TasksController extends Controller
      */
     public function index()
     {
+        $data = [];
+
         //ログインしている場合のみタスク一覧を表示
         if (Auth::check()) {
-          $tasks = Task::all();
+          $user = \Auth::user();
+          $tasks = $user->tasks;
 
-          return view('tasks.index', [
+
+          $data = [
+            'user' => $user,
             'tasks' => $tasks,
-          ]);
+          ];
+
+          return view('tasks.index', $data);
         }
+
         else {
           return view('welcome');
         }
@@ -58,10 +66,10 @@ class TasksController extends Controller
           'status' => 'required|max:10',
         ]);
 
-        $task = new Task;
-        $task->content = $request->content;
-        $task->status = $request->status;
-        $task->save();
+        $request->user()->tasks()->create([
+          'content' => $request->content,
+          'status' => $request->status,
+        ]);
 
         return redirect('/');
     }
@@ -74,12 +82,18 @@ class TasksController extends Controller
      */
     public function show($id)
     {
-        //
-        $task = Task::find($id);
+      $user = \Auth::user();
 
+      $task = Task::find($id);
+
+      if ($user == $task->user) {
         return view('tasks.show', [
           'task' => $task,
         ]);
+      }
+      else {
+        return redirect('/');
+      }
     }
 
     /**
@@ -90,12 +104,18 @@ class TasksController extends Controller
      */
     public function edit($id)
     {
-        //
-        $task = Task::find($id);
+      $user = \Auth::user();
 
+      $task = Task::find($id);
+
+      if ($user == $task->user) {
         return view('tasks.edit', [
           'task' => $task,
         ]);
+      }
+      else {
+        return redirect('/');
+      }
     }
 
     /**
@@ -129,10 +149,17 @@ class TasksController extends Controller
      */
     public function destroy($id)
     {
-        //
-        $task = Task::find($id);
-        $task->delete();
+      $user = \Auth::user();
 
-        return redirect('/');
+      $task = Task::find($id);
+
+      if ($user == $task->user) {
+        $task->delete();
+      }
+      else {
+        // code...
+      }
+
+      return redirect('/');
     }
 }

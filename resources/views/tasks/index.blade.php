@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
+  <?php print $user ?>
 
   <h1>タスク一覧</h1>
 
