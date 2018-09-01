@@ -20,7 +20,7 @@ class CreateTasksTable extends Migration
             $table->string('status', 10);
             $table->timestamps();
 
-            $table->foreign('user_id')->refereces('id')->on('users');
+            $table->foreign('user_id')->references('id')->on('users');
         });
     }
 
